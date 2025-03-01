@@ -6,7 +6,7 @@
   <title>VIP FiveM - Pagamento</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos básicos do seu site */
+    /* Estilos básicos */
     body {
       font-family: Arial, sans-serif;
       background: #121212;
@@ -25,50 +25,39 @@
     .hidden {
       display: none;
     }
-    /* (Aqui devem estar os estilos já existentes do seu style.css para .container, .button-group, etc.) */
-    
-    /* Estilos do pop-up do cupom */
-    .coupon-modal {
+    /* (Inclua aqui os demais estilos existentes do seu style.css para .button-group, etc.) */
+
+    /* Estilos do pop-up do cupom - posicionado no canto superior direito */
+    .coupon-popup {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-    }
-    .coupon-modal.active {
-      display: flex;
-    }
-    .coupon-modal-content {
+      top: 20px;
+      right: 20px;
       background: #002b44;
       padding: 20px;
       border-radius: 5px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 2000;
     }
-    .coupon-modal-content input {
+    .coupon-popup h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    .coupon-popup input {
       width: 100%;
       padding: 10px;
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    .coupon-modal-content button {
+    .coupon-popup button {
       background: #0074D9;
       color: #fff;
       border: none;
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
-      margin-top: 10px;
     }
-    .coupon-modal-content p {
+    .coupon-popup p {
       margin-top: 10px;
       font-weight: bold;
     }
@@ -106,51 +95,36 @@
         <p>00020101021226860014br.gov.bcb.pix2568SEU_CODIGO_PIX_AQUI52040000530398654053.005802BR</p>
       </div>
       <button id="finalizarBtn">Finalizar</button>
-      <!-- Botão para abrir o pop-up do cupom -->
-      <button id="openCouponModalBtn">Validar Cupom</button>
     </section>
   </div>
 
-  <!-- Pop-up do Cupom -->
-  <div id="couponModal" class="coupon-modal">
-    <div class="coupon-modal-content">
-      <h2>Validar Cupom</h2>
-      <input type="text" id="couponInput" placeholder="Digite o cupom">
-      <button id="validateCouponBtn">Validar</button>
-      <p id="couponMessage"></p>
-      <button id="closeCouponModalBtn">Fechar</button>
-    </div>
+  <!-- Pop-up do Cupom - já aberto, no canto superior direito -->
+  <div id="couponPopup" class="coupon-popup">
+    <h2>Validar Cupom</h2>
+    <input type="text" id="couponInput" placeholder="Digite o cupom">
+    <button id="validateCouponBtn">Validar</button>
+    <p id="couponMessage"></p>
   </div>
 
   <script>
     // Lógica do pop-up do cupom
-    const couponModal = document.getElementById('couponModal');
-    const openCouponModalBtn = document.getElementById('openCouponModalBtn');
-    const closeCouponModalBtn = document.getElementById('closeCouponModalBtn');
-    const validateCouponBtn = document.getElementById('validateCouponBtn');
+    const couponPopup = document.getElementById('couponPopup');
     const couponInput = document.getElementById('couponInput');
+    const validateCouponBtn = document.getElementById('validateCouponBtn');
     const couponMessage = document.getElementById('couponMessage');
-
-    openCouponModalBtn.addEventListener('click', function() {
-      couponModal.classList.add('active');
-      couponMessage.textContent = '';
-      couponInput.value = '';
-    });
-
-    closeCouponModalBtn.addEventListener('click', function() {
-      couponModal.classList.remove('active');
-    });
 
     validateCouponBtn.addEventListener('click', function() {
       const couponCode = couponInput.value.trim();
       if (couponCode === "SANTA15") {
         couponMessage.textContent = "CUPOM VALIDADO!!!";
+        // Fecha o pop-up automaticamente após 2 segundos
+        setTimeout(() => {
+          couponPopup.style.display = "none";
+        }, 2000);
       } else {
         couponMessage.textContent = "CUPOM INVALIDO!!!!";
       }
     });
-
-    // (Aqui pode continuar o restante do seu script.js para manipulação das telas, transições, etc.)
   </script>
   <script src="script.js"></script>
 </body>
