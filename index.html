@@ -25,9 +25,33 @@
     .hidden {
       display: none;
     }
-    /* (Inclua aqui os demais estilos existentes do seu style.css para .button-group, etc.) */
-
-    /* Estilos do pop-up do cupom - posicionado no canto superior direito */
+    /* Estilos já existentes para tela de cadastro, botões, etc. */
+    .button-group button {
+      background: #0074D9;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .button-group button:hover {
+      background: #3399FF;
+    }
+    .qr-code {
+      display: block;
+      margin: 20px auto;
+      max-width: 200px;
+    }
+    .pix-code {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    /* Estilos do pop-up do cupom, posicionado no canto superior direito */
     .coupon-popup {
       position: fixed;
       top: 20px;
@@ -37,6 +61,11 @@
       border-radius: 5px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
       z-index: 2000;
+      display: none;
+      width: 300px;
+    }
+    .coupon-popup.active {
+      display: block;
     }
     .coupon-popup h2 {
       margin-top: 0;
@@ -98,7 +127,7 @@
     </section>
   </div>
 
-  <!-- Pop-up do Cupom - já aberto, no canto superior direito -->
+  <!-- Pop-up do Cupom -->
   <div id="couponPopup" class="coupon-popup">
     <h2>Validar Cupom</h2>
     <input type="text" id="couponInput" placeholder="Digite o cupom">
@@ -107,19 +136,33 @@
   </div>
 
   <script>
-    // Lógica do pop-up do cupom
-    const couponPopup = document.getElementById('couponPopup');
-    const couponInput = document.getElementById('couponInput');
-    const validateCouponBtn = document.getElementById('validateCouponBtn');
-    const couponMessage = document.getElementById('couponMessage');
+    // Transição entre telas (exemplo simples)
+    const cadastroForm = document.getElementById("cadastroForm");
+    const cadastroSection = document.getElementById("cadastro");
+    const pagamentoSection = document.getElementById("pagamento");
 
-    validateCouponBtn.addEventListener('click', function() {
+    cadastroForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      // Após envio, ocultar cadastro e mostrar tela de pagamento
+      cadastroSection.classList.add("hidden");
+      pagamentoSection.classList.remove("hidden");
+      // Exibe o pop-up do cupom automaticamente
+      document.getElementById("couponPopup").classList.add("active");
+    });
+
+    // Lógica do pop-up do cupom
+    const couponPopup = document.getElementById("couponPopup");
+    const couponInput = document.getElementById("couponInput");
+    const validateCouponBtn = document.getElementById("validateCouponBtn");
+    const couponMessage = document.getElementById("couponMessage");
+
+    validateCouponBtn.addEventListener("click", function() {
       const couponCode = couponInput.value.trim();
       if (couponCode === "SANTA15") {
         couponMessage.textContent = "CUPOM VALIDADO!!!";
         // Fecha o pop-up automaticamente após 2 segundos
         setTimeout(() => {
-          couponPopup.style.display = "none";
+          couponPopup.classList.remove("active");
         }, 2000);
       } else {
         couponMessage.textContent = "CUPOM INVALIDO!!!!";
