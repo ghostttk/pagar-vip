@@ -1,46 +1,157 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP FiveM - Pagamento</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIP FiveM - Pagamento</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Estilos básicos do seu site */
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .fade {
+      transition: opacity 0.5s ease;
+    }
+    .hidden {
+      display: none;
+    }
+    /* (Aqui devem estar os estilos já existentes do seu style.css para .container, .button-group, etc.) */
+    
+    /* Estilos do pop-up do cupom */
+    .coupon-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .coupon-modal.active {
+      display: flex;
+    }
+    .coupon-modal-content {
+      background: #002b44;
+      padding: 20px;
+      border-radius: 5px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      color: #fff;
+    }
+    .coupon-modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .coupon-modal-content button {
+      background: #0074D9;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .coupon-modal-content p {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Tela de Cadastro -->
-        <section id="cadastro" class="fade show">
-            <h1>Acesso VIP FiveM</h1>
-            <form id="cadastroForm">
-                <input type="email" id="email" placeholder="Digite seu Gmail" required>
-                <input type="text" id="cpf" placeholder="Digite seu CPF (apenas números)" required>
-                <input type="tel" id="telefone" placeholder="Digite seu número de celular" required>
-                <button type="submit">Continuar</button>
-            </form>
-        </section>
+  <div class="container">
+    <!-- Tela de Cadastro -->
+    <section id="cadastro" class="fade show">
+      <h1>Acesso VIP FiveM</h1>
+      <form id="cadastroForm">
+        <input type="email" id="email" placeholder="Digite seu Gmail" required>
+        <input type="text" id="cpf" placeholder="Digite seu CPF (apenas números)" required>
+        <input type="tel" id="telefone" placeholder="Digite seu número de celular" required>
+        <button type="submit">Continuar</button>
+      </form>
+    </section>
 
-        <!-- Tela de Seleção de Pagamento -->
-        <section id="pagamento" class="fade hidden">
-            <h1>Escolha a Forma de Pagamento</h1>
-            <div class="button-group">
-                <button id="pixBtn">PIX</button>
-                <button id="depositoBtn">Depósito</button>
-            </div>
-        </section>
+    <!-- Tela de Seleção de Pagamento -->
+    <section id="pagamento" class="fade hidden">
+      <h1>Escolha a Forma de Pagamento</h1>
+      <div class="button-group">
+        <button id="pixBtn">PIX</button>
+        <button id="depositoBtn">Depósito</button>
+      </div>
+    </section>
 
-        <!-- Tela de Pagamento PIX -->
-        <section id="pix" class="fade hidden">
-            <h1>Pagamento via PIX</h1>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?data=SEU_CODIGO_PIX_AQUI&size=200x200" 
-                 alt="QR Code PIX" class="qr-code">
-            <div class="pix-code">
-                <p>00020101021226860014br.gov.bcb.pix2568SEU_CODIGO_PIX_AQUI52040000530398654053.005802BR</p>
-            </div>
-            <button id="finalizarBtn">Finalizar</button>
-        </section>
+    <!-- Tela de Pagamento PIX -->
+    <section id="pix" class="fade hidden">
+      <h1>Pagamento via PIX</h1>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data=SEU_CODIGO_PIX_AQUI&size=200x200" 
+           alt="QR Code PIX" class="qr-code">
+      <div class="pix-code">
+        <p>00020101021226860014br.gov.bcb.pix2568SEU_CODIGO_PIX_AQUI52040000530398654053.005802BR</p>
+      </div>
+      <button id="finalizarBtn">Finalizar</button>
+      <!-- Botão para abrir o pop-up do cupom -->
+      <button id="openCouponModalBtn">Validar Cupom</button>
+    </section>
+  </div>
+
+  <!-- Pop-up do Cupom -->
+  <div id="couponModal" class="coupon-modal">
+    <div class="coupon-modal-content">
+      <h2>Validar Cupom</h2>
+      <input type="text" id="couponInput" placeholder="Digite o cupom">
+      <button id="validateCouponBtn">Validar</button>
+      <p id="couponMessage"></p>
+      <button id="closeCouponModalBtn">Fechar</button>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script>
+    // Lógica do pop-up do cupom
+    const couponModal = document.getElementById('couponModal');
+    const openCouponModalBtn = document.getElementById('openCouponModalBtn');
+    const closeCouponModalBtn = document.getElementById('closeCouponModalBtn');
+    const validateCouponBtn = document.getElementById('validateCouponBtn');
+    const couponInput = document.getElementById('couponInput');
+    const couponMessage = document.getElementById('couponMessage');
+
+    openCouponModalBtn.addEventListener('click', function() {
+      couponModal.classList.add('active');
+      couponMessage.textContent = '';
+      couponInput.value = '';
+    });
+
+    closeCouponModalBtn.addEventListener('click', function() {
+      couponModal.classList.remove('active');
+    });
+
+    validateCouponBtn.addEventListener('click', function() {
+      const couponCode = couponInput.value.trim();
+      if (couponCode === "SANTA15") {
+        couponMessage.textContent = "CUPOM VALIDADO!!!";
+      } else {
+        couponMessage.textContent = "CUPOM INVALIDO!!!!";
+      }
+    });
+
+    // (Aqui pode continuar o restante do seu script.js para manipulação das telas, transições, etc.)
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
