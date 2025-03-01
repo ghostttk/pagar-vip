@@ -3,172 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VIP FiveM - Pagamento</title>
+  <title>SANTA-CRUZ VIPs - Pagamento</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* Estilos básicos */
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
-    }
-    .fade {
-      transition: opacity 0.5s ease;
-    }
-    .hidden {
-      display: none;
-    }
-    /* Estilos já existentes para tela de cadastro, botões, etc. */
-    .button-group button {
-      background: #0074D9;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-    .button-group button:hover {
-      background: #3399FF;
-    }
-    .qr-code {
-      display: block;
-      margin: 20px auto;
-      max-width: 200px;
-    }
-    .pix-code {
-      background: #1e1e1e;
-      padding: 10px;
-      border-radius: 5px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    /* Estilos do pop-up do cupom, posicionado no canto superior direito */
-    .coupon-popup {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #002b44;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      z-index: 2000;
-      display: none;
-      width: 300px;
-    }
-    .coupon-popup.active {
-      display: block;
-    }
-    .coupon-popup h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
-    }
-    .coupon-popup input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .coupon-popup button {
-      background: #0074D9;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .coupon-popup p {
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 20px auto; padding: 20px; text-align: center; }
+    .hidden { display: none; }
+    .button { background: #0074D9; color: #fff; border: none; padding: 10px 20px; margin: 10px; cursor: pointer; border-radius: 4px; }
+    .pix-code { background: #1e1e1e; padding: 10px; border-radius: 5px; margin-top: 10px; }
+    .coupon-popup { position: fixed; top: 20px; right: 20px; background: #002b44; padding: 20px; border-radius: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: none; }
+    .coupon-popup input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <!-- Tela de Cadastro -->
-    <section id="cadastro" class="fade show">
+    <section id="cadastro">
       <h1>Acesso VIP FiveM</h1>
       <form id="cadastroForm">
         <input type="email" id="email" placeholder="Digite seu Gmail" required>
-        <input type="text" id="cpf" placeholder="Digite seu CPF (apenas números)" required>
+        <input type="text" id="cpf" placeholder="Digite seu CPF" required>
         <input type="tel" id="telefone" placeholder="Digite seu número de celular" required>
-        <button type="submit">Continuar</button>
+        <button type="submit" class="button">Continuar</button>
       </form>
     </section>
 
-    <!-- Tela de Seleção de Pagamento -->
-    <section id="pagamento" class="fade hidden">
+    <section id="pagamento" class="hidden">
       <h1>Escolha a Forma de Pagamento</h1>
-      <div class="button-group">
-        <button id="pixBtn">PIX</button>
-        <button id="depositoBtn">Depósito</button>
-      </div>
+      <button id="pixBtn" class="button">PIX</button>
+      <button id="depositoBtn" class="button">Depósito</button>
     </section>
 
-    <!-- Tela de Pagamento PIX -->
-    <section id="pix" class="fade hidden">
+    <section id="pix" class="hidden">
       <h1>Pagamento via PIX</h1>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?data=SEU_CODIGO_PIX_AQUI&size=200x200" 
-           alt="QR Code PIX" class="qr-code">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data=santacruzrpofc@gmail.com&size=200x200" alt="QR Code PIX">
       <div class="pix-code">
-        <p>00020101021226860014br.gov.bcb.pix2568SEU_CODIGO_PIX_AQUI52040000530398654053.005802BR</p>
+        <p id="pixCode">santacruzrpofc@gmail.com</p>
+        <button id="copyPixBtn" class="button">Copiar Código PIX</button>
       </div>
-      <button id="finalizarBtn">Finalizar</button>
     </section>
   </div>
 
-  <!-- Pop-up do Cupom -->
   <div id="couponPopup" class="coupon-popup">
     <h2>Validar Cupom</h2>
     <input type="text" id="couponInput" placeholder="Digite o cupom">
-    <button id="validateCouponBtn">Validar</button>
+    <button id="validateCouponBtn" class="button">Validar</button>
     <p id="couponMessage"></p>
   </div>
 
   <script>
-    // Transição entre telas (exemplo simples)
-    const cadastroForm = document.getElementById("cadastroForm");
-    const cadastroSection = document.getElementById("cadastro");
-    const pagamentoSection = document.getElementById("pagamento");
-
-    cadastroForm.addEventListener("submit", function(e) {
+    document.getElementById("cadastroForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      // Após envio, ocultar cadastro e mostrar tela de pagamento
-      cadastroSection.classList.add("hidden");
-      pagamentoSection.classList.remove("hidden");
-      // Exibe o pop-up do cupom automaticamente
-      document.getElementById("couponPopup").classList.add("active");
+      document.getElementById("cadastro").classList.add("hidden");
+      document.getElementById("pagamento").classList.remove("hidden");
+      document.getElementById("couponPopup").style.display = "block";
     });
 
-    // Lógica do pop-up do cupom
-    const couponPopup = document.getElementById("couponPopup");
-    const couponInput = document.getElementById("couponInput");
-    const validateCouponBtn = document.getElementById("validateCouponBtn");
-    const couponMessage = document.getElementById("couponMessage");
+    document.getElementById("pixBtn").addEventListener("click", function() {
+      document.getElementById("pagamento").classList.add("hidden");
+      document.getElementById("pix").classList.remove("hidden");
+    });
 
-    validateCouponBtn.addEventListener("click", function() {
-      const couponCode = couponInput.value.trim();
+    document.getElementById("validateCouponBtn").addEventListener("click", function() {
+      const couponCode = document.getElementById("couponInput").value.trim();
       if (couponCode === "SANTA15") {
-        couponMessage.textContent = "CUPOM VALIDADO!!!";
-        // Fecha o pop-up automaticamente após 2 segundos
-        setTimeout(() => {
-          couponPopup.classList.remove("active");
-        }, 2000);
+        document.getElementById("couponMessage").textContent = "CUPOM VALIDADO!!!";
+        setTimeout(() => { document.getElementById("couponPopup").style.display = "none"; }, 2000);
       } else {
-        couponMessage.textContent = "CUPOM INVALIDO!!!!";
+        document.getElementById("couponMessage").textContent = "CUPOM INVALIDO!!!!";
       }
     });
+
+    document.getElementById("copyPixBtn").addEventListener("click", function() {
+      navigator.clipboard.writeText(document.getElementById("pixCode").textContent);
+      alert("Código PIX copiado!");
+    });
   </script>
-  <script src="script.js"></script>
 </body>
 </html>
